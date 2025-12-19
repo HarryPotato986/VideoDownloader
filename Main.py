@@ -25,20 +25,15 @@ def startDownload(downloadType, url, savePath):
     if url is not None:
         if downloadType == 'video':
             download = Download(url, True, savePath)
-            if download is not None:
-                outcome.set("Finished!")
-                outcome_label.configure(foreground="green")
-            else:
-                outcome.set("Failed!")
-                outcome_label.configure(foreground="red")
-        elif downloadType == 'audio':
+        else:
             download = AudioDownload(url, savePath)
-            if download is not None:
-                outcome.set("Finished!")
-                outcome_label.configure(foreground="green")
-            else:
-                outcome.set("Failed!")
-                outcome_label.configure(foreground="red")
+
+        if download is not None:
+            outcome.set("Finished!")
+            outcome_label.configure(foreground="green")
+        else:
+            outcome.set("Failed!")
+            outcome_label.configure(foreground="red")
 
 
 ttk.Label(root, text="choose save location").grid(column=1, row=0, columnspan=2)

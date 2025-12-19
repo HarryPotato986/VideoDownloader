@@ -1,4 +1,11 @@
+@font-face {
+    font-family: 'aurebesh';
+    src: url('../fonts/AurebeshAF-Canon.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+}
+
 body {
     margin: 0;
-    font-family: arial;
+    font-family: arial, aurebesh;
 }

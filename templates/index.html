@@ -1,9 +1,91 @@
 {% extends 'base.html' %}
 
 {% block head %}
-<title>Test</title>
+<title>Video Downloader</title>
+<h1>Gavin's Video Downloader</h1>
 {% endblock %}
 
 {% block body %}
-Bruh
+<div class="content">
+    <form id="form" action="/" method="POST">
+        <label for="link">Link:</label>
+        <br>
+        <input type="url" id="link" name="link" placeholder="https://www.youtube.com/watch?v=OpelfZhK2N8">
+        <br>
+
+        <label class="vselect" for="vselect">
+            <input type="radio" id="vselect" name="avselect" class="vselect" value="video" checked> Video (.mp4)
+        </label>
+        <label class="aselect" for="aselect">
+            <input type="radio" id="aselect" name="avselect" class="aselect" value="audio"> Audio (.mp3)
+        </label>
+        <br>
+
+        <label id="resolution-label" for="resolution">Resolution:</label>
+        <select id="resolution" name="resolution">
+            <option value="best">Best</option>
+            <option value="2160p">2160p 4K</option>
+            <option value="1440p">1440p 2K</option>
+            <option value="1080p">1080p</option>
+            <option value="720p">720p</option>
+            <option value="480p">480p</option>
+            <option value="360p">360p</option>
+            <option value="240p">240p</option>
+            <option value="144p">144p</option>
+            <option value="worst">Worst</option>
+        </select>
+
+        <label for="audioq">Audio Quality:</label>
+        <select id="audioq" name="audioq">
+            <option value="best">Best</option>
+            <option value="320k">320k</option>
+            <option value="256k">256k</option>
+            <option value="192k">192k</option>
+            <option value="128k">128k</option>
+            <option value="64k">64k</option>
+            <option value="worst">Worst</option>
+        </select>
+        <br>
+
+        {% if not is_done %}
+            <input type="submit" name="start" value="Start">
+        {% else %}
+            {% if not failed %}
+                <hr>
+                {{ message }}
+                <br><br>
+                <input type="submit" name="download" value="Download">
+            {% else %}
+                {{ message }}
+            {% endif %}
+        {% endif %}
+        
+    </form>
+</div>
+
+<script>
+        const videoButton = document.getElementById('vselect');
+        const audioButton = document.getElementById('aselect');
+        const resolution = document.getElementById('resolution');
+        const resolutionLabel = document.getElementById('resolution-label');
+
+        function handleRadioChange() {
+            // Check the value of the selected radio button within the group
+            // If the value is 'disable', disable the targetInput.
+            if (audioButton.checked) {
+                resolution.hidden = true;
+                resolutionLabel.hidden = true;
+            } else {
+                resolution.hidden = false;
+                resolutionLabel.hidden = false;
+            }
+        }
+
+        // Add the same event listener to all inputs in the group
+        videoButton.addEventListener('change', handleRadioChange);
+        audioButton.addEventListener('change', handleRadioChange);
+
+        // Set initial state on page load
+        handleRadioChange();
+    </script>
 {% endblock %}

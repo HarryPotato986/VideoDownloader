@@ -1,3 +1,7 @@
+body {
+    background-color: rgb(40,40,40);
+}
+
 @font-face {
     font-family: 'aurebesh';
     src: url('../fonts/AurebeshAF-Canon.otf') format('opentype');
@@ -8,4 +12,47 @@
 body {
     margin: 0;
     font-family: arial, aurebesh;
+    color: white;
+}
+
+.content {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    width: 500px;
+    border: 3px solid green;
+    padding: 10px;
+}
+
+h1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    width: 50%;
+    padding: 10px;
+}
+
+#form {
+    width: 100%;
+    margin-right: 10px;
+}
+
+#link {
+    width: 100%;
+}
+
+.vselect {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.aselect {
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+#resolution {
+    margin-right: 10px;
 }

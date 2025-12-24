@@ -3,7 +3,7 @@ from flask import Flask, render_template, url_for, request, send_file, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 import uuid
-from VideoDownloader import Download
+from VideoDownloader import Download, AudioDownload
 import os
 
 app = Flask(__name__)
@@ -41,10 +41,14 @@ def index():
         
         else:
             text = request.form['link']
+            av = request.form['avselect']
             res = request.form['resolution']
             bitrate = request.form['audioq']
 
-            result = Download(text, res, bitrate, "working-files/" + str(guest_id))
+            if av == "video":
+                result = Download(text, res, bitrate, "working-files/" + str(guest_id))
+            else:
+                result = AudioDownload(text, bitrate, "working-files/" + str(guest_id))
 
             if os.path.isfile(result[0]):
                 new_entry = Save(id=guest_id, file_path=result[0], file_name=result[1])

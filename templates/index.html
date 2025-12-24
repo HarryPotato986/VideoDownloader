@@ -45,17 +45,18 @@
             <option value="64k">64k</option>
             <option value="worst">Worst</option>
         </select>
-        <br>
+        <br><br>
 
-        {% if not is_done %}
-            <input type="submit" name="start" value="Start">
-        {% else %}
+        <input type="submit" name="start" value="Start">
+
+        {% if is_done %}
             {% if not failed %}
                 <hr>
                 {{ message }}
                 <br><br>
                 <input type="submit" name="download" value="Download">
             {% else %}
+                <hr>
                 {{ message }}
             {% endif %}
         {% endif %}

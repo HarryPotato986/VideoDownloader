@@ -154,56 +154,94 @@ def getAudio(yt, abr):
     return None
 
 
-def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = "worst", save_path="C:/Users/gmeis/Downloads"):
+def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = "worst", save_path="temp-folder"):
     #link = "https://www.youtube.com/playlist?list=PL5H87eryjA0B5vi_nQA5fMXyk1QE_eRnz"
+
+    if not os.path.isdir(save_path):
+        os.makedirs(save_path)
 
     if "playlist?list" in link:
         try:
-            pl = Playlist(link, 'WEB') #load playlist
+            pl = Playlist(link) #load playlist
         except:
-            print("Connection Error") #to handle exception
-            return None
+            print("YouTube Connection Error!!!") #to handle exception
+            return ["Can't Connect to YouTube!!! Please try again."]
+        
+        zip_path = save_path + "/files-to-zip"
+        if not os.path.isdir(zip_path):
+            os.mkdir(zip_path)
 
         playlist_name = pl.title
-        filenames = [playlist_name]
+        filenames = []
 
         for yt in pl.videos:
             audio = getAudio(yt, bitrate)
-            filename = audio.title
+            file_name = audio.title
 
             try:
-                audio.download(output_path=save_path,filename=filename + '.mp3')
-                print('downloaded ' + filename + '.mp3')
+                audio.download(output_path=zip_path,filename=file_name + '.mp3')
+                print('downloaded ' + file_name + '.mp3')
+
+                filenames.append(f"{zip_path}/{file_name}.mp3")
+
             except:
                 print("Some Error!")
-                return None
+                return ["Unknown Error!?!?!"]
+            
+        zip_file_name = f"{playlist_name}.zip"
+        zip_file_path = f"{save_path}/{zip_file_name}"
 
-            filenames.append(filename)
+        try:
+            with zipfile.ZipFile(zip_file_path, 'w', zipfile.ZIP_DEFLATED) as zip:
+                for file in filenames:
+                    if os.path.exists(file):
+                        zip.write(file, os.path.basename(file)) # Add the file to the ZIP archive
+                        print(f"Added {file} to {zip_file_name}")
+                    else:
+                        print(f"Error: {file} not found.")
+
+            print(f"\nSuccessfully created {zip_file_name}")
+
+        except Exception as e:
+            print("Failed to make zip!!!")
+            return("Failed to make a zip file for your playlist!!!")
+
+            
+        shutil.rmtree(zip_path)
 
         print('Task Completed!')
-        print('downloaded ' + playlist_name)
-        return filenames
+        return [zip_file_path, zip_file_name]
 
     else:
         try:
-            yt = YouTube(link, 'WEB') #load yt
+            yt = YouTube(link) #load video
         except:
-            print("Connection Error") #to handle exception
-            return None
+            print("YouTube Connection Error!!!") #to handle exception
+            return ["Can't Connect to YouTube!!! Please try again."]
 
-        audio = getAudio(yt, bitrate) #chooses highest bitrate audio
-        filename = audio.title
+        audio = getAudio(yt, bitrate)
+
+        file_name = audio.title + ".mp3"
 
         try:
-            audio.download(output_path=save_path,filename=filename + '.mp3') #downloads file
+            audio.download(output_path=save_path, filename=file_name) #downloads audio
+
         except:
             print("Some Error!")
-            return None
+            return ["Unknown Error!?!?!"]
 
         print('Task Completed!')
-        print('downloaded ' + filename + '.mp3')
-        return filename
+        return [f"{save_path}/{file_name}", file_name]
+    
+
+
+def streamTest(link):
+    yt = YouTube(link)
+    print(yt.streams.filter(adaptive=True, file_extension='mp4', type='audio'))
+
 
 
 
 #Download(save_path="working-files/test", resolution="720p", bitrate="best")
+#streamTest("https://www.youtube.com/watch?v=zoq0tAKpLBI")
+#streamTest("https://www.youtube.com/watch?v=OpelfZhK2N8")

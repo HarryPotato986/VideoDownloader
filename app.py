@@ -48,7 +48,7 @@ def index():
 
             if os.path.isfile(result[0]):
                 new_entry = Save(id=guest_id, file_path=result[0], file_name=result[1])
-                db.session.add(new_entry)
+                db.session.merge(new_entry)
                 db.session.commit()
 
                 return render_template('index.html', is_done=True, failed=False, message=f"{result[1]} is ready to download")

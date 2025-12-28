@@ -62,14 +62,6 @@ def index():
     else:
         return render_template('index.html', is_done=False)
     
-@app.route('/test')
-def test():
-    return send_file("working-files/video.mp4", download_name="test.mp4", as_attachment=True)
-
-@app.route('/uuidtest')
-def uuidtest():
-    guest_id = get_guest_uuid()
-    return f"Hello, Guest! Your UUID is: {guest_id}"
 
 if __name__ == "__main__":
     app.run(host='0.0.0.0', debug=True)

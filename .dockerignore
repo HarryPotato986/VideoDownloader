@@ -1,0 +1,12 @@
+#set up as a whitelist
+*
+
+!app.py
+!cleanup.py
+!VideoDownloader.py
+!wsgi.py
+!entrypoint.sh
+!requirements.txt
+!instance/
+!static/
+!templates/

@@ -1,0 +1,50 @@
+services:
+  nginx-proxy:
+    image: nginxproxy/nginx-proxy:1.9.0
+    container_name: nginx-proxy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - html:/usr/share/nginx/html
+      - certs:/etc/nginx/certs:ro
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+    networks:
+      - vd-network
+
+  acme-companion:
+    image: nginxproxy/acme-companion:2.6.2
+    container_name: nginx-proxy-acme
+    environment:
+      - DEFAULT_EMAIL=email@example.org
+    volumes_from:
+      - nginx-proxy
+    volumes:
+      - certs:/etc/nginx/certs:rw
+      - acme:/etc/acme.sh
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    networks:
+      - vd-network
+
+  video-Downloader:
+    image: video-downloader
+    pull_policy: never
+    container_name: video-downloader
+    expose:
+      - "8000"
+    environment:
+      - VIRTUAL_HOST=subdomain.example.org
+      - VIRTUAL_PORT=8000
+      - LETSENCRYPT_HOST=subdomain.example.org
+    command: sh -c "echo \"SECRET_KEY = '${KEY}'\" > /app/key.py && ./entrypoint.sh"
+    networks:
+      - vd-network
+
+volumes:
+  html:
+  certs:
+  acme:
+
+networks:
+  vd-network:
+    driver: bridge

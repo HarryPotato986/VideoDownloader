@@ -1,5 +1,5 @@
 from key import SECRET_KEY
-from flask import Flask, render_template, url_for, request, send_file, session
+from flask import Flask, render_template, request, send_file, session
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime, timezone
 import uuid
@@ -7,10 +7,11 @@ from VideoDownloader import Download, AudioDownload
 import os
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///test.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 app.config['SECRET_KEY'] = SECRET_KEY
 db = SQLAlchemy(app)
 
+working_folder = "working-files"
 
 def get_guest_uuid():
     if 'guest_uuid' not in session:
@@ -46,9 +47,9 @@ def index():
             bitrate = request.form['audioq']
 
             if av == "video":
-                result = Download(text, res, bitrate, "working-files/" + str(guest_id))
+                result = Download(text, res, bitrate, f'{working_folder}/{str(guest_id)}')
             else:
-                result = AudioDownload(text, bitrate, "working-files/" + str(guest_id))
+                result = AudioDownload(text, bitrate, f'{working_folder}/{str(guest_id)}')
 
             if os.path.isfile(result[0]):
                 new_entry = Save(id=guest_id, file_path=result[0], file_name=result[1])

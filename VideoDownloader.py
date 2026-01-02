@@ -1,4 +1,5 @@
 from pytubefix import YouTube, Playlist
+from pytubefix.exceptions import MembersOnly
 import ffmpeg
 import os, shutil
 import zipfile
@@ -32,11 +33,11 @@ def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="wors
         filenames = []
 
         for yt in pl.videos:
-            video = getVideo(yt, resolution)
-            audio = getAudio(yt, bitrate)
-            file_name = video.title
-
             try:
+                video = getVideo(yt, resolution)
+                audio = getAudio(yt, bitrate)
+                file_name = video.title
+
                 video.download(output_path=temp_path,filename=file_name + '-video.mp4')
                 audio.download(output_path=temp_path,filename=file_name + '-audio.mp4')
                 print('downloaded ' + file_name + '.mp4')
@@ -54,6 +55,9 @@ def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="wors
             except FileNotFoundError:
                 print("Error: ffmpeg not found. Ensure ffmpeg is installed and in your system's PATH.")
                 return ["Unknown ffmpeg Error!?!?!"]
+            except MembersOnly:
+                print(f"Can't download members only videos!!!")
+                return [f"Unable to download. {video.title} is a members only video!!!"]
             except:
                 print("Some Error!")
                 return ["Unknown Error!?!?!"]
@@ -89,10 +93,10 @@ def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="wors
             print("YouTube Connection Error!!!") #to handle exception
             return ["Can't Connect to YouTube!!! Please try again."]
 
-        video = getVideo(yt, resolution)
-        audio = getAudio(yt, bitrate)
-
         try:
+            video = getVideo(yt, resolution)
+            audio = getAudio(yt, bitrate)
+
             video.download(output_path=temp_path, filename="video.mp4") #downloads video
             audio.download(output_path=temp_path, filename="audio.mp4") #downloads audio
 
@@ -109,7 +113,9 @@ def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="wors
         except FileNotFoundError:
             print("Error: ffmpeg not found. Ensure ffmpeg is installed and in your system's PATH.")
             return ["Unknown ffmpeg Error!?!?!"]
-
+        except MembersOnly:
+                print(f"Can't download members only videos!!!")
+                return [f"Unable to download. {video.title} is a members only video!!!"]
         except:
             print("Some Error!")
             return ["Unknown Error!?!?!"]
@@ -175,15 +181,17 @@ def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = 
         filenames = []
 
         for yt in pl.videos:
-            audio = getAudio(yt, bitrate)
-            file_name = audio.title
-
             try:
+                audio = getAudio(yt, bitrate)
+                file_name = audio.title
+
                 audio.download(output_path=zip_path,filename=file_name + '.mp3')
                 print('downloaded ' + file_name + '.mp3')
 
                 filenames.append(f"{zip_path}/{file_name}.mp3")
-
+            except MembersOnly:
+                print(f"Can't download members only videos!!!")
+                return [f"Unable to download. {audio.title} is a members only video!!!"]
             except:
                 print("Some Error!")
                 return ["Unknown Error!?!?!"]
@@ -219,13 +227,14 @@ def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = 
             print("YouTube Connection Error!!!") #to handle exception
             return ["Can't Connect to YouTube!!! Please try again."]
 
-        audio = getAudio(yt, bitrate)
-
-        file_name = audio.title + ".mp3"
-
         try:
-            audio.download(output_path=save_path, filename=file_name) #downloads audio
+            audio = getAudio(yt, bitrate)
+            file_name = audio.title + ".mp3"
 
+            audio.download(output_path=save_path, filename=file_name) #downloads audio
+        except MembersOnly:
+                print(f"Can't download members only videos!!!")
+                return [f"Unable to download. {audio.title} is a members only video!!!"]
         except:
             print("Some Error!")
             return ["Unknown Error!?!?!"]

@@ -24,15 +24,18 @@ def changeSaveLocation():
 def startDownload(downloadType, url, savePath):
     if url is not None:
         if downloadType == 'video':
-            download = Download(url, True, savePath)
+            download = Download(url, "best", "best", savePath)
         else:
-            download = AudioDownload(url, savePath)
+            download = AudioDownload(url, "best", savePath)
 
-        if download is not None:
-            outcome.set("Finished!")
+        if len(download) > 1:
+            outcome.set(f"Finished downloading {download[1]}")
             outcome_label.configure(foreground="green")
+        elif len(download) <= 1:
+            outcome.set(download[0])
+            outcome_label.configure(foreground="red")
         else:
-            outcome.set("Failed!")
+            outcome.set("Failed! Unkown error!!!")
             outcome_label.configure(foreground="red")
 
 

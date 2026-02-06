@@ -5,7 +5,7 @@ import os, shutil
 import zipfile
 
 
-def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="worst", bitrate="worst", save_path = "videos"):
+def Download(link="https://www.youtube.com/watch?v=OpelfZhK2N8",resolution="worst", bitrate="worst", save_path = "videos") -> list:
 
     #SAVE_PATH = "videos" #where it saves
 
@@ -160,7 +160,7 @@ def getAudio(yt, abr):
     return None
 
 
-def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = "worst", save_path="temp-folder"):
+def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = "worst", save_path="temp-folder") -> list:
     #link = "https://www.youtube.com/playlist?list=PL5H87eryjA0B5vi_nQA5fMXyk1QE_eRnz"
 
     if not os.path.isdir(save_path):
@@ -183,15 +183,32 @@ def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = 
         for yt in pl.videos:
             try:
                 audio = getAudio(yt, bitrate)
-                file_name = audio.title
+                file_name = audio.title + '.mp3'
 
-                audio.download(output_path=zip_path,filename=file_name + '.mp3')
-                print('downloaded ' + file_name + '.mp3')
+                audio.download(output_path=zip_path,filename="temp.mp3")
 
-                filenames.append(f"{zip_path}/{file_name}.mp3")
+                (ffmpeg
+                .input(zip_path + "/temp.mp3")
+                .output(
+                    f"{zip_path}/{file_name}",
+                    acodec='libmp3lame',  # Standard MP3 encoder
+                    audio_bitrate='192k', # Standard bitrate for compatibility
+                    ac=2,                 # Force stereo
+                    ar='44100'            # Standard sample rate
+                )
+                .overwrite_output()
+                .run(capture_stdout=True, capture_stderr=True))
+
+                os.remove(f"{zip_path}/temp.mp3")
+
+                print('downloaded ' + file_name)
+
+                filenames.append(f"{zip_path}/{file_name}")
             except MembersOnly:
                 print(f"Can't download members only videos!!!")
                 return [f"Unable to download. {audio.title} is a members only video!!!"]
+            except ffmpeg.Error as e:
+                print("Error occurred:", e.stderr.decode())
             except:
                 print("Some Error!")
                 return ["Unknown Error!?!?!"]
@@ -231,10 +248,26 @@ def AudioDownload(link="https://www.youtube.com/watch?v=OpelfZhK2N8", bitrate = 
             audio = getAudio(yt, bitrate)
             file_name = audio.title + ".mp3"
 
-            audio.download(output_path=save_path, filename=file_name) #downloads audio
+            audio.download(output_path=save_path, filename="temp.mp3") #downloads audio
+            (ffmpeg
+            .input(save_path + "/temp.mp3")
+            .output(
+                f"{save_path}/{file_name}",
+                acodec='libmp3lame',  # Standard MP3 encoder
+                audio_bitrate='192k', # Standard bitrate for compatibility
+                ac=2,                 # Force stereo
+                ar='44100'            # Standard sample rate
+            )
+            .overwrite_output()
+            .run(capture_stdout=True, capture_stderr=True))
+
+            os.remove(f"{save_path}/temp.mp3")
+
         except MembersOnly:
-                print(f"Can't download members only videos!!!")
-                return [f"Unable to download. {audio.title} is a members only video!!!"]
+            print(f"Can't download members only videos!!!")
+            return [f"Unable to download. {audio.title} is a members only video!!!"]
+        except ffmpeg.Error as e:
+            print("Error occurred:", e.stderr.decode())
         except:
             print("Some Error!")
             return ["Unknown Error!?!?!"]
